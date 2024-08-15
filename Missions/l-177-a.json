@@ -1,0 +1,96 @@
+{
+    "Flight Planning Phase": [
+        {
+        "name": "FRR",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Flight Planning",
+        "color": "green",
+        "textColor": "white"
+        },
+        {
+        "name": "PIR",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Flight Planning",
+        "color": "green",
+        "textColor": "white"
+        },
+        {
+        "name": "ERR",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Flight Planning",
+        "color": "green",
+        "textColor": "white"
+        },
+        {
+        "name": "LRR",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Flight Planning",
+        "color": "green",
+        "textColor": "white"
+        }
+    ],
+    "Launch Phase": [
+        {
+        "name": "Launch Debrief",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Launch",
+        "color": "orange",
+        "textColor": "white"
+        },
+        {
+        "name": "Launch!",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Launch",
+        "color": "orange",
+        "textColor": "white"
+        }
+    ],
+    "Flight Phase": [
+        {
+        "name": "Ascent",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Flight",
+        "color": "blue",
+        "textColor": "white"
+        },
+        {
+        "name": "Burst",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Flight",
+        "color": "blue",
+        "textColor": "white"
+        },
+        {
+        "name": "Descent",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Flight",
+        "color": "blue",
+        "textColor": "white"
+        },
+        {
+        "name": "Landing",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Flight",
+        "color": "blue",
+        "textColor": "white"
+        },
+        {
+        "name": "Recovery",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Flight",
+        "color": "blue",
+        "textColor": "white"
+        }
+    ]
+}

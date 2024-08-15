@@ -1,0 +1,18 @@
+{
+    "TEST_GROUP": [{
+    "name": "Event 1 with a really long name",
+    "start": 1723763593000,
+    "end": 1723767193000,
+    "type": "TEST_GROUP",
+    "color": "orange",
+    "textColor": "white"
+    }],
+    "GROUP_2": [{
+    "name": "Event 2",
+    "start": 1665409597000,
+    "end": 1665456252000,
+    "type": "GROUP_2",
+    "color": "red",
+    "textColor": "white"
+    }]
+}

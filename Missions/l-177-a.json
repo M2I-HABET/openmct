@@ -43,6 +43,54 @@
         "textColor": "white"
         },
         {
+        "name": "Launch Site Prep",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Launch",
+        "color": "orange",
+        "textColor": "white"
+        },
+        {
+        "name": "Spacecraft Power On",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Launch",
+        "color": "orange",
+        "textColor": "white"
+        },
+        {
+        "name": "Roll Call for Fill",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Launch",
+        "color": "orange",
+        "textColor": "white"
+        },
+        {
+        "name": "Balloon Fill",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Launch",
+        "color": "orange",
+        "textColor": "white"
+        },
+        {
+        "name": "Spacecraft Tests and Checks",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Launch",
+        "color": "orange",
+        "textColor": "white"
+        },
+        {
+        "name": "Roll Call for Launch",
+        "start": 1723763593000,
+        "end": 1723767193000,
+        "type": "Launch",
+        "color": "orange",
+        "textColor": "white"
+        },
+        {
         "name": "Launch!",
         "start": 1723763593000,
         "end": 1723767193000,

@@ -1,0 +1,144 @@
+{
+    "Flight Planning Phase": [
+        {
+            "name": "FRR",
+            "start": 1722560400000,
+            "end": 1722564000000,
+            "type": "Flight Planning",
+            "color": "green",
+            "textColor": "white"
+        },
+        {
+            "name": "PIR",
+            "start": 1722909600000,
+            "end": 1722913200000,
+            "type": "Flight Planning",
+            "color": "green",
+            "textColor": "white"
+        },
+        {
+            "name": "ERR",
+            "start": 1723510800000,
+            "end": 1723514400000,
+            "type": "Flight Planning",
+            "color": "green",
+            "textColor": "white"
+        },
+        {
+            "name": "LRR",
+            "start": 1723860000000,
+            "end": 1723863600000,
+            "type": "Flight Planning",
+            "color": "green",
+            "textColor": "white"
+        }
+    ],
+    "Launch Phase": [
+        {
+            "name": "Launch Debrief",
+            "start": 1724009400000,
+            "end": 1724011200000,
+            "type": "Launch",
+            "color": "orange",
+            "textColor": "white"
+        },
+        {
+            "name": "Launch Site Prep",
+            "start": 1724014800000,
+            "end": 1724016600000,
+            "type": "Launch",
+            "color": "orange",
+            "textColor": "white"
+        },
+        {
+            "name": "Spacecraft Power On",
+            "start": 1724017500000,
+            "end": 1724017800000,
+            "type": "Launch",
+            "color": "orange",
+            "textColor": "white"
+        },
+        {
+            "name": "Roll Call for Fill",
+            "start": 1724018100000,
+            "end": 1724018400000,
+            "type": "Launch",
+            "color": "orange",
+            "textColor": "white"
+        },
+        {
+            "name": "Balloon Fill",
+            "start": 1724018700000,
+            "end": 1724019900000,
+            "type": "Launch",
+            "color": "orange",
+            "textColor": "white"
+        },
+        {
+            "name": "Spacecraft Tests and Checks",
+            "start": 1724019900000,
+            "end": 1724020200000,
+            "type": "Launch",
+            "color": "orange",
+            "textColor": "white"
+        },
+        {
+            "name": "Roll Call for Launch",
+            "start": 1724020200000,
+            "end": 1724020260000,
+            "type": "Launch",
+            "color": "orange",
+            "textColor": "white"
+        },
+        {
+            "name": "Launch!",
+            "start": 1724020500000,
+            "end": 1724020800000,
+            "type": "Launch",
+            "color": "orange",
+            "textColor": "white"
+        }
+    ],
+    "Flight Phase": [
+        {
+            "name": "Ascent",
+            "start": 1724020800000,
+            "end": 1724025600000,
+            "type": "Flight",
+            "color": "blue",
+            "textColor": "white"
+        },
+        {
+            "name": "Burst",
+            "start": 1724025600000,
+            "end": 1724025660000,
+            "type": "Flight",
+            "color": "blue",
+            "textColor": "white"
+        },
+        {
+            "name": "Descent",
+            "start": 1724025660000,
+            "end": 1724028600000,
+            "type": "Flight",
+            "color": "blue",
+            "textColor": "white"
+        },
+        {
+            "name": "Landing",
+            "start": 1724028600000,
+            "end": 1724028660000,
+            "type": "Flight",
+            "color": "blue",
+            "textColor": "white"
+        },
+        {
+            "name": "Recovery",
+            "start": 1724028660000,
+            "end": 1724031000000,
+            "type": "Flight",
+            "color": "blue",
+            "textColor": "white"
+        }
+    ]
+}

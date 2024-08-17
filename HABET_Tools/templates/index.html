@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HABET Data Display</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>HABET Telemetry</h1>
+    <div id="map" style="height: 600px;"></div>
+    <div>
+        <canvas id="altitudeChart" width="400" height="200"></canvas>
+        <canvas id="temperatureChart" width="400" height="200"></canvas>
+        <canvas id="humidityChart" width="400" height="200"></canvas>
+        <canvas id="pressureChart" width="400" height="200"></canvas>
+    </div>
+
+    <script>
+        var map = L.map('map').setView([0, 0], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        var marker = L.marker([0, 0]).addTo(map);
+
+        var altitudeCtx = document.getElementById('altitudeChart').getContext('2d');
+        var temperatureCtx = document.getElementById('temperatureChart').getContext('2d');
+        var humidityCtx = document.getElementById('humidityChart').getContext('2d');
+        var pressureCtx = document.getElementById('pressureChart').getContext('2d');
+
+        var temperatureChart = new Chart(temperatureCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Temperature',
+                    data: [],
+                    borderColor: 'red',
+                    fill: false
+                }]
+            }
+        });
+
+        var humidityChart = new Chart(humidityCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Humidity',
+                    data: [],
+                    borderColor: 'blue',
+                    fill: false
+                }]
+            }
+        });
+
+        var pressureChart = new Chart(pressureCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Pressure',
+                    data: [],
+                    borderColor: 'green',
+                    fill: false
+                }]
+            }
+        });
+
+        var altitudeChart = new Chart(altitudeCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Altitude',
+                    data: [],
+                    borderColor: 'purple',
+                    fill: false
+                }]
+            }
+        });
+
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    var labels = Array.from(Array(data.temperature.length).keys());
+                    altitudeChart.data.labels = labels; // Update altitude chart
+                    altitudeChart.data.datasets[0].data = data.altitude;
+                    altitudeChart.update();
+
+                    temperatureChart.data.labels = labels;
+                    temperatureChart.data.datasets[0].data = data.temperature;
+                    temperatureChart.update();
+
+                    humidityChart.data.labels = labels;
+                    humidityChart.data.datasets[0].data = data.humidity;
+                    humidityChart.update();
+
+                    pressureChart.data.labels = labels;
+                    pressureChart.data.datasets[0].data = data.pressure;
+                    pressureChart.update();
+
+                    if (data.latitude.length > 0 && data.longitude.length > 0) {
+                        var lat = data.latitude[data.latitude.length - 1];
+                        var lon = data.longitude[data.longitude.length - 1];
+                        marker.setLatLng([lat, lon]);
+                        map.setView([lat, lon], 13);
+                    }
+                });
+        }
+
+        setInterval(fetchData, 1000);
+    </script>
+</body>
+</html>

@@ -13,15 +13,11 @@ OpenMCT.
 '''
 import streamlit as st
 from streamlit_folium import st_folium
-import threading
 import serial
 import serial.tools.list_ports
 import folium
-import websocket
 import time
-import random
 from datetime import datetime
-import json
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import plotly.graph_objects as go
@@ -38,12 +34,6 @@ map_obj = folium.Map(location=[initial_latitude, initial_longitude], zoom_start=
 
 # Data prefix to look for in the serial data
 data_prefix = '$$HAR'
-
-#OpenMCT WebSocket URL
-OPENMCT_WS_URL = "ws://localhost:8080"  # Change to your OpenMCT WebSocket URL
-
-# Initialize WebSocket connection
-ws = websocket.create_connection(OPENMCT_WS_URL)
 
 # List to store the breadcrumb trail (latitude and longitude) and altitude data
 breadcrumb_trail = []
@@ -97,22 +87,12 @@ ser = serial.Serial(
 Functions
 ===============================================
 '''
-# Function to send telemetry data to OpenMCT
-def send_to_openmct(data):
-    # Example JSON format for OpenMCT
-    telemetry_data = {
-        "timestamp": int(time.time() * 1000),  # Timestamp in milliseconds
-        "data": data
-    }
-    ws.send(json.dumps(telemetry_data))
 
 # Function to add a point to the map and update the breadcrumb trail
 def add_point_to_map(lat, lon, alt):
     global map_obj, breadcrumb_trail
     point = (lat, lon)
     breadcrumb_trail.append(point)
-    #altitude_data.append(alt)
-
     # Add marker for the new point
     folium.Marker(location=[lat, lon], popup=f"Altitude: {alt} meters").add_to(map_obj)
     
@@ -130,7 +110,6 @@ def save_map(filename="map.html"):
 # Function to update the map with new data
 def update_map(lat, lon, alt):
     global map_obj, breadcrumb_trail
-
     point = (lat, lon)
     breadcrumb_trail.append(point)
 
@@ -140,62 +119,6 @@ def update_map(lat, lon, alt):
     # Update the polyline to show the breadcrumb trail
     if len(breadcrumb_trail) > 1:
         folium.PolyLine(breadcrumb_trail, color="blue").add_to(map_obj)
-
-# Functio to read the serial data and parse it
-def serial_reader():
-    try:
-        while True:
-            data = ser.readline().decode('utf-8').strip()
-            if data:
-                print(data)
-                if data.startswith(data_prefix):
-                    # Parse the HAR data
-                    parsed_data = data.split(',')
-                    latitude = float(parsed_data[1])/10000000
-                    longitude = float(parsed_data[2])/10000000
-                    altitude = float(parsed_data[3])/1000
-                    temperature = float(parsed_data[8])/100
-                    pressure = float(parsed_data[7])/100
-                    humidity = float(parsed_data[9])/1000
-                    battery = float(parsed_data[11])
-                    speed = float(parsed_data[5])/10
-                    pdop = float(parsed_data[6])/10
-                    heading = float(parsed_data[4])/100000
-
-                    # Add the point to the map and keep the breadcrumb trail
-                    #add_point_to_map(latitude, longitude, altitude)
-
-                    altitude_data.append(altitude)
-                    temperature_data.append(temperature)
-                    pressure_data.append(pressure)
-                    humidity_data.append(humidity)
-
-                    # Build data object for OpenMCT
-                    telemetry_data = {
-                        "latitude": latitude,
-                        "longitude": longitude,
-                        "altitude": altitude,
-                        "temperature": temperature,
-                        "pressure": pressure,
-                        "humidity": humidity,
-                        "battery": battery,
-                        "speed": speed,
-                        "pdop": pdop,
-                        "heading": heading
-                    }
-                    # Send the data to OpenMCT
-                    send_to_openmct(telemetry_data)
-                    
-                    # Print the data
-                    print(f"Latitude: {latitude}, Longitude: {longitude}, Altitude: {altitude} meters")
-                    print(f"Temperature: {temperature} °C, Pressure: {pressure} hPa, Humidity: {humidity} %")
-                time.sleep(.5)  # Adjust sleep time for your data rate
-
-    except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        ser.close()
-
 
 # Plotting telemetry data
 def update_plots(frame):
@@ -228,12 +151,11 @@ def update_plots(frame):
     plt.xlabel('Data Points')
     plt.ylabel('Humidity (%)')
     plt.grid(True)
-
     plt.tight_layout()
 
 # Set up the plots with FuncAnimation for live updating
 plt.figure(figsize=(12, 8))
-ani = FuncAnimation(plt.gcf(), update_plots, interval=1000)
+ani = FuncAnimation(plt.gcf(), update_plots, interval=1000,cache_frame_data=False)
 plt.show(block=False)
 '''
 ===============================================
@@ -267,28 +189,10 @@ try:
                 temperature_data.append(temperature)
                 pressure_data.append(pressure)
                 humidity_data.append(humidity)
-
-                # Build data object for OpenMCT
-                telemetry_data = {
-                    "latitude": latitude,
-                    "longitude": longitude,
-                    "altitude": altitude,
-                    "temperature": temperature,
-                    "pressure": pressure,
-                    "humidity": humidity,
-                    "battery": battery,
-                    "speed": speed,
-                    "pdop": pdop,
-                    "heading": heading
-                }
-                # Send the data to OpenMCT
-                send_to_openmct(telemetry_data)
                 
                 # Print the data
                 print(f"Latitude: {latitude}, Longitude: {longitude}, Altitude: {altitude} meters")
                 print(f"Temperature: {temperature} °C, Pressure: {pressure} hPa, Humidity: {humidity} %")
-            
-                
                 # Save the map periodically
                 save_map("breadcrumb_trail_map.html")
                 # To keep the plot responsive
@@ -297,10 +201,7 @@ try:
 except KeyboardInterrupt:
     # Close the serial port on exit
     ser.close()
-    # Close the WebSocket connection
-    ws.close()
 
     # Final save of the map
     save_map("final_breadcrumb_trail_map.html")
-    
-    print("Keyboard interrupt detected. Closing Serial and Websocket. Exiting...")
+    print("Keyboard interrupt detected. Closing Serial. Exiting...")

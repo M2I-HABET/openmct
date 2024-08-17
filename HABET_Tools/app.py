@@ -1,24 +1,39 @@
 import streamlit as st
-import folium
 from streamlit_folium import st_folium
 import serial
 import serial.tools.list_ports
-import threading
+import folium
+from datetime import datetime
+import plotly.graph_objects as go
+import pandas as pd
 import time
+
+
+# Configuration and setup
+# Initialize Streamlit app
+st.title('Telemetry Data Broker')
+#st.sidebar.title('Configuration')
 
 # Initialize the map
 initial_latitude = 42.035
 initial_longitude = -93.613
 map_obj = folium.Map(location=[initial_latitude, initial_longitude], zoom_start=7)
 
+# Data prefix to look for in the serial data
+data_prefix = '$$HAR'
 
-# Telemetry data storage
+# List to store the breadcrumb trail (latitude and longitude) and telemetry data
 breadcrumb_trail = []
 altitude_data = []
 temperature_data = []
 pressure_data = []
 humidity_data = []
 
+# Create empty containers for map and plots
+map_container = st.empty()
+plot_container = st.empty()
+
+'''
 # Function to scan and list available serial ports
 def list_serial_ports():
     ports = serial.tools.list_ports.comports()
@@ -28,30 +43,18 @@ def list_serial_ports():
 def select_serial_port():
     ports = list_serial_ports()
     if not ports:
-        print("No serial ports found.")
+        st.error("No serial ports found.")
         return None
     
-    print("Available serial ports:")
-    for i, port in enumerate(ports):
-        print(f"{i}: {port}")
-    
-    selected_port = None
-    while selected_port is None:
-        try:
-            choice = int(input("Select a serial port by number: "))
-            if 0 <= choice < len(ports):
-                selected_port = ports[choice]
-            else:
-                print("Invalid choice. Please try again.")
-        except ValueError:
-            print("Invalid input. Please enter a number.")
-    
+    selected_port = st.selectbox("Select a serial port", ports)
     return selected_port
+'''
 
 # Select the serial port
-selected_port = select_serial_port()
+#selected_port = select_serial_port()
+selected_port = '/dev/tty.usbserial-10'
 if selected_port is None:
-    exit("No serial port selected. Exiting...")
+    st.stop()
 
 # Configure the serial connection
 ser = serial.Serial(
@@ -60,75 +63,73 @@ ser = serial.Serial(
     timeout=1       # Timeout in seconds
 )
 
+# Functions
 
-# Function to update the map with new data
+# Function to add a point to the map and update the breadcrumb trail
 def update_map(lat, lon, alt):
     global map_obj, breadcrumb_trail
-
     point = (lat, lon)
     breadcrumb_trail.append(point)
 
-    # Add marker for the new point
+    # Create a new map for Streamlit
+    map_obj = folium.Map(location=[lat, lon], zoom_start=7)
     folium.Marker(location=[lat, lon], popup=f"Altitude: {alt} meters").add_to(map_obj)
-
-    # Update the polyline to show the breadcrumb trail
     if len(breadcrumb_trail) > 1:
         folium.PolyLine(breadcrumb_trail, color="blue").add_to(map_obj)
 
-# Function to read serial data
-def serial_reader():
-    try:
-        while True:
-            data = ser.readline().decode('utf-8').strip()
-            if data:
+    # Update the map display in Streamlit
+    with map_container:
+        st_folium(map_obj, width=700, height=500)
+
+# Function to update the graphs
+def update_plots():
+    fig = go.Figure()
+    if altitude_data:
+        fig.add_trace(go.Scatter(y=altitude_data, mode='lines+markers', name='Altitude'))
+    if temperature_data:
+        fig.add_trace(go.Scatter(y=temperature_data, mode='lines+markers', name='Temperature'))
+    if pressure_data:
+        fig.add_trace(go.Scatter(y=pressure_data, mode='lines+markers', name='Pressure'))
+    if humidity_data:
+        fig.add_trace(go.Scatter(y=humidity_data, mode='lines+markers', name='Humidity'))
+    
+    fig.update_layout(title='Telemetry Data Over Time', xaxis_title='Data Points', yaxis_title='Values')
+    
+    # Update the plot display in Streamlit
+    with plot_container:
+        st.plotly_chart(fig, use_container_width=True)
+
+
+# Main Loop
+
+# Continuously read data from the serial port and update the Streamlit app
+try:
+    while True:
+        data = ser.readline().decode('utf-8').strip()
+        if data:
+            print(data)
+            if data.startswith(data_prefix):
+                # Parse the HAR data
+                parsed_data = data.split(',')
                 latitude = float(parsed_data[1])/10000000
                 longitude = float(parsed_data[2])/10000000
                 altitude = float(parsed_data[3])/1000
                 temperature = float(parsed_data[8])/100
                 pressure = float(parsed_data[7])/100
                 humidity = float(parsed_data[9])/1000
-                battery = float(parsed_data[11])
-                speed = float(parsed_data[5])/10
-                pdop = float(parsed_data[6])/10
-                heading = float(parsed_data[4])/100000
 
-                # Update map and telemetry data
+                # Update the map and plots
                 update_map(latitude, longitude, altitude)
+
                 altitude_data.append(altitude)
                 temperature_data.append(temperature)
                 pressure_data.append(pressure)
                 humidity_data.append(humidity)
 
-                # Log the data
-                print(f"Latitude: {latitude}, Longitude: {longitude}, Altitude: {altitude} meters")
-                print(f"Temperature: {temperature} °C, Pressure: {pressure} hPa, Humidity: {humidity} %")
-            
-            time.sleep(1)  # Adjust sleep time for your data rate
+                update_plots()
+                time.sleep(.5)  # Adjust this to control the update rate
 
-    except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        ser.close()
-
-# Run the serial reader in a separate thread
-threading.Thread(target=serial_reader, daemon=True).start()
-
-# Streamlit app setup
-st.title("Real-Time Breadcrumb Trail Map")
-
-# Display the updated map in Streamlit
-map_display = st_folium(map_obj, width=700, height=500)
-
-# Display the telemetry data
-st.subheader("Telemetry Data")
-st.write(f"Latest Altitude: {altitude_data[-1] if altitude_data else 'N/A'} meters")
-st.write(f"Latest Temperature: {temperature_data[-1] if temperature_data else 'N/A'} °C")
-st.write(f"Latest Pressure: {pressure_data[-1] if pressure_data else 'N/A'} hPa")
-st.write(f"Latest Humidity: {humidity_data[-1] if humidity_data else 'N/A'} %")
-
-# Real-time plot with Streamlit (altitude, temperature, pressure, humidity)
-st.subheader("Real-Time Telemetry Plots")
-st.line_chart(altitude_data, width=0, height=0, use_container_width=True)
-st.line_chart(temperature_data, width=0, height=0, use_container_width=True)
-st.line_chart(pressure_data, width=0, height=0, use_container_width=True)
-st.line_chart(humidity_data, width=0, height=0, use_container_width=True)
+except KeyboardInterrupt:
+    # Close the serial port on exit
+    ser.close()
+    st.write("Keyboard interrupt detected. Closing Serial. Exiting...")

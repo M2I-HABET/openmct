@@ -5,15 +5,47 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+        }
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+        }
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+    </style>
 </head>
 <body>
-    <h1>HABET Telemetry</h1>
-    <div id="map" style="height: 600px;"></div>
-    <div>
-        <canvas id="altitudeChart" width="400" height="200"></canvas>
-        <canvas id="temperatureChart" width="400" height="200"></canvas>
-        <canvas id="humidityChart" width="400" height="200"></canvas>
-        <canvas id="pressureChart" width="400" height="200"></canvas>
+    <h1>HAR Telemetry</h1>
+    <div id="map"></div>
+    <div class="container">
+        <div class="chart-container">
+            <canvas id="temperatureChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="humidityChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="pressureChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="altitudeChart"></canvas>
+        </div>
     </div>
 
     <script>
@@ -25,10 +57,10 @@
 
         var marker = L.marker([0, 0]).addTo(map);
 
-        var altitudeCtx = document.getElementById('altitudeChart').getContext('2d');
         var temperatureCtx = document.getElementById('temperatureChart').getContext('2d');
         var humidityCtx = document.getElementById('humidityChart').getContext('2d');
         var pressureCtx = document.getElementById('pressureChart').getContext('2d');
+        var altitudeCtx = document.getElementById('altitudeChart').getContext('2d');
 
         var temperatureChart = new Chart(temperatureCtx, {
             type: 'line',
@@ -87,10 +119,6 @@
                 .then(response => response.json())
                 .then(data => {
                     var labels = Array.from(Array(data.temperature.length).keys());
-                    altitudeChart.data.labels = labels; // Update altitude chart
-                    altitudeChart.data.datasets[0].data = data.altitude;
-                    altitudeChart.update();
-
                     temperatureChart.data.labels = labels;
                     temperatureChart.data.datasets[0].data = data.temperature;
                     temperatureChart.update();
@@ -102,6 +130,10 @@
                     pressureChart.data.labels = labels;
                     pressureChart.data.datasets[0].data = data.pressure;
                     pressureChart.update();
+
+                    altitudeChart.data.labels = labels;
+                    altitudeChart.data.datasets[0].data = data.altitude;
+                    altitudeChart.update();
 
                     if (data.latitude.length > 0 && data.longitude.length > 0) {
                         var lat = data.latitude[data.latitude.length - 1];

@@ -63,6 +63,17 @@ ser = serial.Serial(
     timeout=1       # Timeout in seconds
 )
 
+def sim_data():
+    """ Simulate reading data from a serial port. """
+    return {
+        'temperature': round(random.uniform(20, 30), 2),
+        'humidity': round(random.uniform(30, 60), 2),
+        'pressure': round(random.uniform(980, 1050), 2),
+        'latitude': round(random.uniform(-90, 90), 6),
+        'longitude': round(random.uniform(-180, 180), 6),
+        'altitude': round(random.uniform(900, 5000), 2)  # Added altitude
+    }
+
 def read_serial_data():
     """ Read serial data from the connected device """
     data = ser.readline().decode('utf-8').strip()
@@ -96,7 +107,8 @@ def index():
 
 @app.route('/data')
 def get_data():
-    new_data = read_serial_data()
+    #new_data = read_serial_data()
+    new_data = sim_data()
     for key in data:
         data[key].append(new_data[key])
         # Limit data length for demonstration purposes
@@ -105,4 +117,4 @@ def get_data():
     return jsonify(data)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

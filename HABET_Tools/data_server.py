@@ -108,7 +108,7 @@ def index():
 @app.route('/data')
 def get_data():
     #new_data = read_serial_data()
-    new_data = sim_data()
+    #new_data = sim_data()
     for key in data:
         data[key].append(new_data[key])
         # Limit data length for demonstration purposes

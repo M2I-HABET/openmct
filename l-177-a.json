@@ -36,24 +36,24 @@
     "Launch Phase": [
         {
             "name": "Launch Debrief",
-            "start": 1724009400000,
-            "end": 1724011200000,
+            "start": 1723991400000,
+            "end": 1723993200000,
             "type": "Launch",
             "color": "orange",
             "textColor": "white"
         },
         {
             "name": "Launch Site Prep",
-            "start": 1724014800000,
-            "end": 1724016600000,
+            "start": 1723993200000,
+            "end": 1723993200000,
             "type": "Launch",
             "color": "orange",
             "textColor": "white"
         },
         {
             "name": "Spacecraft Power On",
-            "start": 1724017500000,
-            "end": 1724017800000,
+            "start": 1723993200000,
+            "end": 1723993200000,
             "type": "Launch",
             "color": "orange",
             "textColor": "white"
@@ -68,7 +68,7 @@
         },
         {
             "name": "Balloon Fill",
-            "start": 1724018700000,
+            "start": 1723993200000,
             "end": 1724019900000,
             "type": "Launch",
             "color": "orange",
